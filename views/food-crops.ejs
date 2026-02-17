@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Agriculture Info</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">🌾 Agriculture Info Portal</div>
+            <div class="nav-menu">
+                <span class="nav-user">Welcome, <%= userName %>!</span>
+                <a href="/auth/logout" class="nav-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="layout-with-sidebar">
+        <aside class="sidebar">
+            <div class="sidebar-header">Navigation</div>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" class="menu-link">📊 Dashboard</a></li>
+                <li><a href="/dashboard/crop-diseases" class="menu-link">🦠 Crop Diseases</a></li>
+                <li><a href="/dashboard/food-crops" class="menu-link active">🌱 Food Crops</a></li>
+                <li><a href="/dashboard/crop-prices" class="menu-link">💰 Crop Prices</a></li>
+                <li><a href="/dashboard/agricultural-seasons" class="menu-link">📅 Seasons</a></li>
+                <li><a href="/dashboard/ai-tools" class="menu-link">🤖 AI Tools</a></li>
+                <li><a href="/dashboard/research-topics" class="menu-link">📚 Research</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>🌱 Food Crops</h1>
+                <p>Comprehensive information about major food crops</p>
+            </div>
+
+            <div class="content-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Crop Name</th>
+                            <th>Season</th>
+                            <th>Water Required</th>
+                            <th>Yield per Hectare</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% crops.forEach(crop => { %>
+                            <tr>
+                                <td><strong><%= crop.name %></strong></td>
+                                <td><%= crop.season %></td>
+                                <td><%= crop.waterRequired %></td>
+                                <td><%= crop.yieldPerHectare %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+
+                <div class="crops-info">
+                    <h2>About Food Crops</h2>
+                    <p>
+                        Food crops are essential for human nutrition and food security. Different crops
+                        require different environmental conditions, water levels, and seasonal timing. This
+                        information helps farmers plan their crop rotation, irrigation schedules, and harvesting times.
+                    </p>
+                    <ul>
+                        <li><strong>Season:</strong> Indicates the best time to plant and cultivate the crop</li>
+                        <li><strong>Water Required:</strong> Shows the annual water requirement in millimeters</li>
+                        <li><strong>Yield:</strong> Average production per hectare under optimal conditions</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Agriculture Information Portal. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Agriculture Info</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">🌾 Agriculture Info Portal</div>
+            <div class="nav-menu">
+                <span class="nav-user">Welcome, <%= userName %>!</span>
+                <a href="/auth/logout" class="nav-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="layout-with-sidebar">
+        <aside class="sidebar">
+            <div class="sidebar-header">Navigation</div>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" class="menu-link">📊 Dashboard</a></li>
+                <li><a href="/dashboard/crop-diseases" class="menu-link">🦠 Crop Diseases</a></li>
+                <li><a href="/dashboard/food-crops" class="menu-link">🌱 Food Crops</a></li>
+                <li><a href="/dashboard/crop-prices" class="menu-link">💰 Crop Prices</a></li>
+                <li><a href="/dashboard/agricultural-seasons" class="menu-link">📅 Seasons</a></li>
+                <li><a href="/dashboard/ai-tools" class="menu-link active">🤖 AI Tools</a></li>
+                <li><a href="/dashboard/research-topics" class="menu-link">📚 Research</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>🤖 Agriculture AI Tools</h1>
+                <p>Advanced AI-powered tools for modern agriculture</p>
+            </div>
+
+            <div class="content-container">
+                <div class="tools-grid">
+                    <% tools.forEach(tool => { %>
+                        <div class="tool-card">
+                            <div class="tool-header">
+                                <h3><%= tool.name %></h3>
+                                <div class="accuracy-badge">
+                                    <span class="accuracy-label">Accuracy:</span>
+                                    <span class="accuracy-value"><%= tool.accuracy %></span>
+                                </div>
+                            </div>
+                            <div class="tool-content">
+                                <div class="info-block">
+                                    <strong>Description:</strong>
+                                    <p><%= tool.description %></p>
+                                </div>
+                                <div class="info-block">
+                                    <strong>Usage Area:</strong>
+                                    <p><%= tool.usageArea %></p>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <div class="ai-info">
+                    <h2>About AI in Agriculture</h2>
+                    <p>
+                        Artificial Intelligence is revolutionizing agriculture by providing innovative
+                        solutions for disease detection, pest management, yield prediction, and resource
+                        optimization. These tools help farmers:
+                    </p>
+                    <ul>
+                        <li>Make data-driven decisions</li>
+                        <li>Reduce crop losses due to diseases and pests</li>
+                        <li>Optimize water and fertilizer usage</li>
+                        <li>Improve productivity and profitability</li>
+                        <li>Contribute to sustainable farming practices</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Agriculture Information Portal. All rights reserved.</p>
+    </footer>
+</body>
+</html>

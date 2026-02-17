@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Prices - AgriculturalInfo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .header-title {
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .header-menu {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .header-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            transition: opacity 0.3s;
+        }
+
+        .header-menu a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-title {
+            font-size: 48px;
+            color: #f9a825;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        .search-container {
+            max-width: 900px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 18px 24px;
+            font-size: 18px;
+            border: none;
+            outline: none;
+            background: white;
+        }
+
+        .search-button {
+            padding: 18px 32px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-button:hover {
+            background: #1557b0;
+        }
+
+        .search-hint {
+            color: #1a73e8;
+            font-size: 15px;
+            margin-top: 12px;
+            padding-left: 5px;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-results-message {
+            background: #e3f2fd;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            color: #1976d2;
+            font-size: 18px;
+        }
+
+        .info-box {
+            background: #e8f5e9;
+            padding: 20px 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .info-box-title {
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .info-box-text {
+            color: #1b5e20;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .result-item {
+            padding: 25px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-title {
+            font-size: 22px;
+            color: #1a73e8;
+            margin-bottom: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .result-title:hover {
+            color: #0d47a1;
+            text-decoration: underline;
+        }
+
+        .result-url {
+            color: #5f6368;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .result-description {
+            color: #3c4043;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .footer-section p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-hint {
+            color: #999;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-title">🌾 AgriculturalInfo</div>
+        <nav class="header-menu">
+            <a href="/dashboard">📊 Dashboard</a>
+            <a href="#resources">📚 Resources</a>
+            <a href="#profile">👤 vishnuvardhanreddych45@gmail.com</a>
+            <a href="/auth/logout">🚪 Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">₹₹ Market Prices</h1>
+        <p class="page-subtitle">Real-time market prices for agricultural commodities across India</p>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input"
+                    placeholder="Search for crops..."
+                    autocomplete="off"
+                />
+                <button class="search-button" onclick="searchCrop()">🔍</button>
+            </div>
+            <p class="search-hint">Try: carrot, tomato, rice, wheat, etc.</p>
+        </div>
+
+        <div id="resultsContainer" class="results-section">
+            <div class="empty-state">
+                <div class="empty-state-icon">🌾</div>
+                <p class="empty-state-text">Enter a crop name to search</p>
+                <p class="empty-state-hint">Get real-time market prices and information</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-title">
+                🌾 AgriculturalInfo
+            </div>
+            <div class="footer-links">
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <p>Dashboard</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p>info@agriinfo.com</p>
+                </div>
+            </div>
+        </div>
+        <p style="margin-top: 20px; color: #999;">Your complete agriculture information portal for crop prices, diseases, and farming solutions.</p>
+    </footer>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const resultsContainer = document.getElementById('resultsContainer');
+
+            // Local crop data
+            const localCropData = [
+                { crop: 'Rice', price: '₹3,500/quintal', market: 'International', lastUpdated: '2026-02-16' },
+                { crop: 'Wheat', price: '₹2,800/quintal', market: 'International', lastUpdated: '2026-02-16' },
+                { crop: 'Corn', price: '₹2,400/quintal', market: 'International', lastUpdated: '2026-02-16' },
+                { crop: 'Potato', price: '₹1,200/quintal', market: 'Local', lastUpdated: '2026-02-16' },
+                { crop: 'Tomato', price: '₹2,500/quintal', market: 'Local', lastUpdated: '2026-02-16' },
+                { crop: 'Onion', price: '₹1,800/quintal', market: 'Local', lastUpdated: '2026-02-16' },
+                { crop: 'Carrot', price: '₹2,200/quintal', market: 'Local', lastUpdated: '2026-02-16' },
+                { crop: 'Soybeans', price: '₹4,800/quintal', market: 'International', lastUpdated: '2026-02-16' },
+                { crop: 'Cotton', price: '₹6,500/quintal', market: 'International', lastUpdated: '2026-02-16' },
+                { crop: 'Sugarcane', price: '₹350/quintal', market: 'Local', lastUpdated: '2026-02-16' }
+            ];
+
+            // Add event listener for Enter key
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchCrop();
+                    }
+                });
+            }
+
+            // Make searchCrop function global
+            window.searchCrop = async function() {
+                const query = searchInput.value.trim();
+                
+                if (!query) {
+                    resultsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">⚠️</div>
+                            <p class="empty-state-text">Please enter a crop name</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Show loading
+                resultsContainer.innerHTML = `
+                    <div class="loading-container">
+                        <div class="spinner"></div>
+                        <p>Searching for "${query}"...</p>
+                    </div>
+                `;
+
+                // Search in local data first
+                const localResults = localCropData.filter(item =>
+                    item.crop.toLowerCase().includes(query.toLowerCase())
+                );
+
+                if (localResults.length > 0) {
+                    displayLocalResults(localResults, query);
+                } else {
+                    // If no local results, automatically search Google
+                    await searchGoogle(query);
+                }
+            };
+
+            function displayLocalResults(results, query) {
+                let html = `
+                    <div class="info-box">
+                        <div class="info-box-title">✅ Local Market Prices Found</div>
+                        <p class="info-box-text">Showing ${results.length} result(s) for "${query}"</p>
+                    </div>
+                `;
+
+                results.forEach(result => {
+                    html += `
+                        <div class="result-item">
+                            <h3 class="result-title">${result.crop}</h3>
+                            <div style="display: inline-block; background: #4caf50; color: white; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 18px; margin: 10px 0;">
+                                ${result.price}
+                            </div>
+                            <p class="result-description">
+                                <strong>Market:</strong> ${result.market}<br>
+                                <strong>Last Updated:</strong> ${result.lastUpdated}
+                            </p>
+                        </div>
+                    `;
+                });
+
+                resultsContainer.innerHTML = html;
+            }
+
+            async function searchGoogle(query) {
+                try {
+                    // Using a CORS proxy to access Google Custom Search API
+                    const apiKey = 'AIzaSyBqQvNzj0YcJQVPSQYd4fSF3tMZzg2FcY4';
+                    const cx = '017576662512468239146:omuauf_lfve';
+                    const searchQuery = encodeURIComponent(query + ' crop price in India market');
+                    const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${searchQuery}`;
+
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (data.items && data.items.length > 0) {
+                        displayGoogleResults(data.items, query);
+                    } else {
+                        displayNoResults(query);
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    displayError(query);
+                }
+            }
+
+            function displayGoogleResults(results, query) {
+                let html = `
+                    <div class="info-box">
+                        <div class="info-box-title">🌐 Automatic Web Search Results</div>
+                        <p class="info-box-text">No local prices found for "${query}". Here's information from the web:</p>
+                    </div>
+                `;
+
+                results.slice(0, 5).forEach(item => {
+                    html += `
+                        <div class="result-item">
+                            <h3 class="result-title" onclick="window.open('${item.link}', '_blank')">
+                                ${item.title}
+                            </h3>
+                            <p class="result-url">${item.displayLink}</p>
+                            <p class="result-description">${item.snippet}</p>
+                        </div>
+                    `;
+                });
+
+                resultsContainer.innerHTML = html;
+            }
+
+            function displayNoResults(query) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results-message">
+                        <h3 style="margin-bottom: 15px;">🔍 No Results Found</h3>
+                        <p>We couldn't find information for "<strong>${query}</strong>".</p>
+                        <p style="margin-top: 10px;">Try searching with different keywords or check spelling.</p>
+                    </div>
+                `;
+            }
+
+            function displayError(query) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results-message">
+                        <h3 style="margin-bottom: 15px;">⚠️ Search Error</h3>
+                        <p>Unable to fetch results for "<strong>${query}</strong>".</p>
+                        <p style="margin-top: 10px;">Please try again or check your internet connection.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Agriculture Info</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">🌾 Agriculture Info Portal</div>
+            <div class="nav-menu">
+                <span class="nav-user">Welcome, <%= userName %>!</span>
+                <a href="/auth/logout" class="nav-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="layout-with-sidebar">
+        <aside class="sidebar">
+            <div class="sidebar-header">Navigation</div>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" class="menu-link">📊 Dashboard</a></li>
+                <li><a href="/dashboard/crop-diseases" class="menu-link">🦠 Crop Diseases</a></li>
+                <li><a href="/dashboard/food-crops" class="menu-link">🌱 Food Crops</a></li>
+                <li><a href="/dashboard/crop-prices" class="menu-link">💰 Crop Prices</a></li>
+                <li><a href="/dashboard/agricultural-seasons" class="menu-link">📅 Seasons</a></li>
+                <li><a href="/dashboard/ai-tools" class="menu-link">🤖 AI Tools</a></li>
+                <li><a href="/dashboard/research-topics" class="menu-link active">📚 Research</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>📚 Agriculture AI Research Topics</h1>
+                <p>Latest research initiatives in agriculture and artificial intelligence</p>
+            </div>
+
+            <div class="content-container">
+                <div class="research-grid">
+                    <% topics.forEach(topic => { %>
+                        <div class="research-card">
+                            <div class="research-header">
+                                <h3><%= topic.topic %></h3>
+                                <span class="status-badge <%= topic.status === 'Ongoing' ? 'ongoing' : (topic.status === 'Active' ? 'active' : 'development') %>">
+                                    <%= topic.status %>
+                                </span>
+                            </div>
+                            <div class="research-content">
+                                <div class="info-block">
+                                    <strong>Description:</strong>
+                                    <p><%= topic.description %></p>
+                                </div>
+                                <div class="info-block">
+                                    <strong>Institution:</strong>
+                                    <p><%= topic.institution %></p>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <div class="research-info">
+                    <h2>Future of Agriculture Technology</h2>
+                    <p>
+                        The future of agriculture lies in the combination of traditional farming wisdom
+                        and cutting-edge technology. Research institutions around the world are working
+                        on innovative solutions to address challenges like:
+                    </p>
+                    <ul>
+                        <li>Climate change and variability</li>
+                        <li>Growing food demand for increasing population</li>
+                        <li>Water scarcity and resource management</li>
+                        <li>Pest and disease pressure</li>
+                        <li>Soil degradation and sustainability</li>
+                    </ul>
+                    <p>
+                        These research initiatives aim to develop sustainable, efficient, and productive
+                        agricultural systems for the future.
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Agriculture Information Portal. All rights reserved.</p>
+    </footer>
+</body>
+</html>

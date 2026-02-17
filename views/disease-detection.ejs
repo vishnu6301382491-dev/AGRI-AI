@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Disease Detection - Crop Doctor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f3ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-area p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .upload-area .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .preview-container {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .preview-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f0f3ff;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .image-info p {
+            color: #555;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .crop-selector {
+            margin-top: 20px;
+        }
+
+        .crop-selector label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .crop-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .crop-selector select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f0f3ff;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #e8ebff;
+        }
+
+        .results-section {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .disease-card {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .disease-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .disease-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .confidence-badge {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .severity-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .severity-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .severity-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .severity-high {
+            background: #f5c6cb;
+            color: #721c24;
+        }
+
+        .severity-critical {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .treatment-section {
+            margin-top: 15px;
+        }
+
+        .treatment-group {
+            margin-bottom: 15px;
+        }
+
+        .treatment-group h4 {
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .treatment-group ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .treatment-group li {
+            color: #555;
+            font-size: 14px;
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .treatment-group li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #d32f2f;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌱 AI Crop Disease Detection</h1>
+            <p>Upload a crop image and our AI model will analyze it for diseases, provide treatment recommendations, and useful insights</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <h2>Upload Crop Image</h2>
+                
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">🌾</div>
+                    <p>Drag and drop your crop image here</p>
+                    <p>or <span class="highlight">click to select</span></p>
+                    <p style="font-size: 12px; color: #999; margin-top: 10px;">Supported formats: JPG, PNG, GIF, WebP (Max 10MB)</p>
+                </div>
+
+                <input type="file" id="imageInput" accept="image/*">
+
+                <div class="preview-container" id="previewContainer">
+                    <img id="imagePreview" alt="Preview">
+                    <div class="image-info">
+                        <p><strong>File:</strong> <span id="fileName"></span></p>
+                        <p><strong>Size:</strong> <span id="fileSize"></span></p>
+                    </div>
+                </div>
+
+                <div class="crop-selector">
+                    <label for="cropType">Select Crop Type (Optional):</label>
+                    <select id="cropType">
+                        <option value="">Let AI Detect</option>
+                        <option value="tomato">Tomato</option>
+                        <option value="potato">Potato</option>
+                        <option value="rice">Rice</option>
+                        <option value="wheat">Wheat</option>
+                        <option value="maize">Maize</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" id="detectBtn" disabled>
+                        🔍 Detect Disease
+                    </button>
+                    <button class="btn-secondary" id="clearBtn" style="display: none;">
+                        Clear Image
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection">
+                <h2>Detection Results</h2>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Analyzing image with AI model...</p>
+                </div>
+
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: #333; margin-bottom: 20px;">Detection History</h2>
+            <div id="historyContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const detectBtn = document.getElementById('detectBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const resultsSection = document.getElementById('resultsSection');
+        const loading = document.getElementById('loading');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        // File upload handling
+        uploadArea.addEventListener('click', () => imageInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            imageInput.files = e.dataTransfer.files;
+            handleFileSelect();
+        });
+
+        imageInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            const files = imageInput.files;
+            if (files.length === 0) return;
+
+            const file = files[0];
+
+            // Validate file size (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File size exceeds 10MB limit');
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showError('Please select a valid image file');
+                return;
+            }
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                previewContainer.style.display = 'block';
+                uploadArea.style.display = 'none';
+                detectBtn.disabled = false;
+                clearBtn.style.display = 'block';
+                errorMessage.classList.remove('active');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        clearBtn.addEventListener('click', () => {
+            imageInput.value = '';
+            previewContainer.style.display = 'none';
+            uploadArea.style.display = 'block';
+            detectBtn.disabled = true;
+            clearBtn.style.display = 'none';
+            resultsSection.classList.remove('active');
+        });
+
+        detectBtn.addEventListener('click', async () => {
+            if (imageInput.files.length === 0) {
+                showError('Please select an image first');
+                return;
+            }
+
+            // Show loading
+            resultsSection.classList.add('active');
+            loading.classList.add('active');
+            resultsContainer.innerHTML = '';
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('cropImage', imageInput.files[0]);
+            formData.append('cropType', document.getElementById('cropType').value);
+
+            try {
+                const response = await fetch('/api/disease/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                loading.classList.remove('active');
+
+                if (!data.success) {
+                    showError(data.message || 'Error processing image');
+                    resultsSection.classList.remove('active');
+                    return;
+                }
+
+                displayResults(data);
+                loadHistory();
+                showSuccess('Disease analysis completed successfully!');
+
+            } catch (error) {
+                loading.classList.remove('active');
+                showError('Error communicating with server: ' + error.message);
+                resultsSection.classList.remove('active');
+            }
+        });
+
+        function displayResults(data) {
+            const pred = data.prediction;
+            const details = data.disease_details;
+
+            let html = `
+                <div class="disease-card">
+                    <div class="disease-header">
+                        <div>
+                            <div class="disease-name">${pred.disease_name}</div>
+                            <p style="color: #999; font-size: 14px; margin-top: 5px;">${pred.crop.toUpperCase()}</p>
+                        </div>
+                        <div>
+                            <span class="confidence-badge">Confidence: ${pred.confidence_score}</span>
+                            <span class="severity-badge severity-${pred.severity_level}">
+                                Severity: ${pred.severity_level.toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 15px; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                        <p style="color: #666; font-size: 14px;">
+                            <strong>Affected Area:</strong> ${pred.affected_area_percentage}% of visible crop
+                        </p>
+                    </div>
+            `;
+
+            if (details.scientific_name) {
+                html += `
+                    <div class="treatment-group">
+                        <h4>Scientific Name</h4>
+                        <p style="color: #555; font-size: 14px; font-style: italic;">${details.scientific_name}</p>
+                    </div>
+                `;
+            }
+
+            if (details.symptoms && details.symptoms.length > 0) {
+                html += `
+                    <div class="treatment-group">
+                        <h4>Symptoms</h4>
+                        <ul>
+                            ${details.symptoms.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (details.chemical_treatment && details.chemical_treatment.length > 0) {
+                html += `
+                    <div class="treatment-group">
+                        <h4>Chemical Treatment</h4>
+                        <ul>
+                            ${details.chemical_treatment.map(t => `<li>${t}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (details.organic_treatment && details.organic_treatment.length > 0) {
+                html += `
+                    <div class="treatment-group">
+                        <h4>Organic Treatment</h4>
+                        <ul>
+                            ${details.organic_treatment.map(t => `<li>${t}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (details.preventive_measures && details.preventive_measures.length > 0) {
+                html += `
+                    <div class="treatment-group">
+                        <h4>Preventive Measures</h4>
+                        <ul>
+                            ${details.preventive_measures.map(m => `<li>${m}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (details.fertilizer_suggestions && details.fertilizer_suggestions.length > 0) {
+                html += `
+                    <div class="treatment-group">
+                        <h4>Fertilizer Suggestions</h4>
+                        <ul>
+                            ${details.fertilizer_suggestions.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            resultsContainer.innerHTML = html;
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/disease/history');
+                const data = await response.json();
+
+                if (data.success && data.history.length > 0) {
+                    const historyContainer = document.getElementById('historyContainer');
+                    let historyHtml = '<table style="width: 100%; border-collapse: collapse;">';
+                    historyHtml += '<tr style="background: #f5f5f5;"><th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Disease</th><th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Crop</th><th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Confidence</th><th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Date</th></tr>';
+
+                    data.history.forEach(pred => {
+                        const date = new Date(pred.timestamp).toLocaleDateString();
+                        historyHtml += `
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <td style="padding: 10px;">${pred.disease_name}</td>
+                                <td style="padding: 10px;">${pred.crop}</td>
+                                <td style="padding: 10px;">${pred.confidence_score}</td>
+                                <td style="padding: 10px;">${date}</td>
+                            </tr>
+                        `;
+                    });
+
+                    historyHtml += '</table>';
+                    historyContainer.innerHTML = historyHtml;
+                } else {
+                    document.getElementById('historyContainer').innerHTML = '<p style="color: #999;">No detection history yet</p>';
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('active');
+            setTimeout(() => errorMessage.classList.remove('active'), 5000);
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.classList.add('active');
+            setTimeout(() => successMessage.classList.remove('active'), 5000);
+        }
+
+        // Load history on page load
+        loadHistory();
+    </script>
+</body>
+</html>

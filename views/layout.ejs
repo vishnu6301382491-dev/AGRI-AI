@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Agriculture Info</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                🌾 Agriculture Info Portal
+            </div>
+            <div class="nav-menu">
+                <% if (locals.userName) { %>
+                    <span class="nav-user">Welcome, <%= userName %>!</span>
+                    <a href="/auth/logout" class="nav-logout">Logout</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <% if (locals.userName) { %>
+        <aside class="sidebar">
+            <div class="sidebar-header">Navigation</div>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" class="menu-link">📊 Dashboard</a></li>
+                <li><a href="/dashboard/crop-diseases" class="menu-link">🦠 Crop Diseases</a></li>
+                <li><a href="/dashboard/food-crops" class="menu-link">🌱 Food Crops</a></li>
+                <li><a href="/dashboard/crop-prices" class="menu-link">💰 Crop Prices</a></li>
+                <li><a href="/dashboard/agricultural-seasons" class="menu-link">📅 Seasons</a></li>
+                <li><a href="/dashboard/ai-tools" class="menu-link">🤖 AI Tools</a></li>
+                <li><a href="/dashboard/research-topics" class="menu-link">📚 Research</a></li>
+            </ul>
+        </aside>
+    <% } %>
+
+    <main class="main-content">
+        <%-body -%>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Agriculture Information Portal. All rights reserved.</p>
+    </footer>
+</body>
+</html>

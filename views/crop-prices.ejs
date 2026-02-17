@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Agriculture Info</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">🌾 Agriculture Info Portal</div>
+            <div class="nav-menu">
+                <span class="nav-user">Welcome, <%= userName %>!</span>
+                <a href="/auth/logout" class="nav-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="layout-with-sidebar">
+        <aside class="sidebar">
+            <div class="sidebar-header">Navigation</div>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" class="menu-link">📊 Dashboard</a></li>
+                <li><a href="/dashboard/crop-diseases" class="menu-link">🦠 Crop Diseases</a></li>
+                <li><a href="/dashboard/food-crops" class="menu-link">🌱 Food Crops</a></li>
+                <li><a href="/dashboard/crop-prices" class="menu-link active">💰 Crop Prices</a></li>
+                <li><a href="/dashboard/agricultural-seasons" class="menu-link">📅 Seasons</a></li>
+                <li><a href="/dashboard/ai-tools" class="menu-link">🤖 AI Tools</a></li>
+                <li><a href="/dashboard/research-topics" class="menu-link">📚 Research</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>💰 Crop Prices</h1>
+                <p>Current market prices for agricultural products</p>
+            </div>
+
+            <div class="content-container">
+                <div class="price-alert">
+                    <p>Last updated: <strong id="update-time">2026-02-10</strong></p>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Crop</th>
+                            <th>Price</th>
+                            <th>Market</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% prices.forEach(priceData => { %>
+                            <tr>
+                                <td><strong><%= priceData.crop %></strong></td>
+                                <td class="price-cell"><%= priceData.price %></td>
+                                <td>
+                                    <span class="market-badge <%= priceData.market === 'International' ? 'international' : 'local' %>">
+                                        <%= priceData.market %>
+                                    </span>
+                                </td>
+                                <td><%= priceData.lastUpdated %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+
+                <div class="price-info">
+                    <h2>Price Information</h2>
+                    <p>
+                        These prices are for reference purposes and are updated regularly. Actual prices
+                        may vary based on:
+                    </p>
+                    <ul>
+                        <li>Market demand and supply</li>
+                        <li>Quality and grade of the produce</li>
+                        <li>Location and transportation costs</li>
+                        <li>Seasonal variations</li>
+                        <li>Global market trends</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Agriculture Information Portal. All rights reserved.</p>
+    </footer>
+</body>
+</html>

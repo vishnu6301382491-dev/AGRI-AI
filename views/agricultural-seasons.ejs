@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Agriculture Info</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">🌾 Agriculture Info Portal</div>
+            <div class="nav-menu">
+                <span class="nav-user">Welcome, <%= userName %>!</span>
+                <a href="/auth/logout" class="nav-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="layout-with-sidebar">
+        <aside class="sidebar">
+            <div class="sidebar-header">Navigation</div>
+            <ul class="sidebar-menu">
+                <li><a href="/dashboard" class="menu-link">📊 Dashboard</a></li>
+                <li><a href="/dashboard/crop-diseases" class="menu-link">🦠 Crop Diseases</a></li>
+                <li><a href="/dashboard/food-crops" class="menu-link">🌱 Food Crops</a></li>
+                <li><a href="/dashboard/crop-prices" class="menu-link">💰 Crop Prices</a></li>
+                <li><a href="/dashboard/agricultural-seasons" class="menu-link active">📅 Seasons</a></li>
+                <li><a href="/dashboard/ai-tools" class="menu-link">🤖 AI Tools</a></li>
+                <li><a href="/dashboard/research-topics" class="menu-link">📚 Research</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>📅 Agricultural Seasons</h1>
+                <p>Information about different agricultural seasons and their characteristics</p>
+            </div>
+
+            <div class="content-container">
+                <div class="seasons-grid">
+                    <% seasons.forEach(season => { %>
+                        <div class="season-card">
+                            <div class="season-header">
+                                <h3><%= season.name %></h3>
+                                <p class="season-months"><%= season.months %></p>
+                            </div>
+                            <div class="season-content">
+                                <div class="info-block">
+                                    <strong>Characteristics:</strong>
+                                    <p><%= season.characteristics %></p>
+                                </div>
+                                <div class="info-block">
+                                    <strong>Temperature Range:</strong>
+                                    <p><%= season.temperature %></p>
+                                </div>
+                                <div class="info-block">
+                                    <strong>Suitable Crops:</strong>
+                                    <div class="crop-tags">
+                                        <% season.crops.forEach(crop => { %>
+                                            <span class="tag"><%= crop %></span>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <div class="seasons-info">
+                    <h2>Understanding Agricultural Seasons</h2>
+                    <p>
+                        Agricultural seasons in India are primarily categorized into three main seasons
+                        based on rainfall patterns and weather conditions. Understanding these seasons
+                        is crucial for:
+                    </p>
+                    <ul>
+                        <li>Planning crop rotation and succession</li>
+                        <li>Preparing irrigation systems</li>
+                        <li>Timing pesticide and fertilizer applications</li>
+                        <li>Scheduling harvesting and post-harvest activities</li>
+                        <li>Marketing and selling crops</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Agriculture Information Portal. All rights reserved.</p>
+    </footer>
+</body>
+</html>
