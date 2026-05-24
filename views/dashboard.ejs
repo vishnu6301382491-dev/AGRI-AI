@@ -32,8 +32,13 @@
         <div class="nav-container">
             <div class="nav-logo">🌾 AGRI AI</div>
             <div class="nav-menu">
-                <span class="nav-user">Welcome, <%= userName %>!</span>
-                <a href="/auth/logout" class="nav-logout">Logout</a>
+                <% if (isAuthenticated) { %>
+                    <span class="nav-user">Welcome, <%= userName %>!</span>
+                    <a href="/auth/logout" class="nav-logout">Logout</a>
+                <% } else { %>
+                    <span class="nav-user">Welcome, Guest!</span>
+                    <a href="/auth/login" class="nav-login" style="background: #2196F3; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none;">Sign In</a>
+                <% } %>
             </div>
         </div>
     </nav>
@@ -145,81 +150,77 @@
         </main>
     </div>
 
-    <script>
-        // Severity Distribution Chart
-        const severityData = {
-            low: <%= summary.severity_distribution.low %>,
-            medium: <%= summary.severity_distribution.medium %>,
-            high: <%= summary.severity_distribution.high %>,
-            critical: <%= summary.severity_distribution.critical %>
-        };
-
-        if (document.getElementById('severityChart')) {
-            const severityCtx = document.getElementById('severityChart').getContext('2d');
-            new Chart(severityCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Low', 'Medium', 'High', 'Critical'],
-                    datasets: [{
-                        data: [
-                            severityData.low,
-                            severityData.medium,
-                            severityData.high,
-                            severityData.critical
-                        ],
-                        backgroundColor: ['#4CAF50', '#FF9800', '#F44336', '#9C27B0'],
-                        borderColor: '#fff',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
+    <% 
+        const chartConfig = {
+            severity: summary.severity_distribution || {low: 0, medium: 0, high: 0, critical: 0},
+            diseases: (() => { 
+                const m = {}; 
+                if (analytics.predictions) {
+                    analytics.predictions.forEach(p => { m[p.disease] = (m[p.disease] || 0) + 1; });
                 }
-            });
-        }
+                return m;
+            })()
+        };
+    %>
+    <!-- Chart configuration data -->
+    <script type="application/json" id="chart-config">
+<%- JSON.stringify(chartConfig) %>
+    </script>
+    <script>
+        // Parse chart data from JSON
+        const chartConfig = JSON.parse(document.getElementById('chart-config').textContent);
+        const severityData = chartConfig.severity;
+        const diseaseChartData = chartConfig.diseases;
 
-        // Diseases Chart
-        <% 
-            const topDiseases = {};
-            if (analytics.predictions) {
-                analytics.predictions.forEach(pred => {
-                    topDiseases[pred.disease] = (topDiseases[pred.disease] || 0) + 1;
+        // Initialize Severity Chart
+        setTimeout(() => {
+            if (document.getElementById('severityChart')) {
+                const severityCtx = document.getElementById('severityChart').getContext('2d');
+                new Chart(severityCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Low', 'Medium', 'High', 'Critical'],
+                        datasets: [{
+                            data: [severityData.low, severityData.medium, severityData.high, severityData.critical],
+                            backgroundColor: ['#4CAF50', '#FF9800', '#F44336', '#9C27B0'],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
                 });
             }
-            const diseaseLabels = Object.keys(topDiseases);
-            const diseaseData = Object.values(topDiseases);
-        %>
+        }, 100);
 
-        if (document.getElementById('diseasesChart') && <%= diseaseLabels.length %> > 0) {
-            const diseasesCtx = document.getElementById('diseasesChart').getContext('2d');
-            new Chart(diseasesCtx, {
-                type: 'bar',
-                data: {
-                    labels: <%- JSON.stringify(diseaseLabels) %>,
-                    datasets: [{
-                        label: 'Detections',
-                        data: <%- JSON.stringify(diseaseData) %>,
-                        backgroundColor: '#2196F3',
-                        borderColor: '#1976D2',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
+        // Initialize Diseases Chart
+        setTimeout(() => {
+            if (document.getElementById('diseasesChart') && Object.keys(diseaseChartData).length > 0) {
+                const diseasesCtx = document.getElementById('diseasesChart').getContext('2d');
+                new Chart(diseasesCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(diseaseChartData),
+                        datasets: [{
+                            label: 'Detections',
+                            data: Object.values(diseaseChartData),
+                            backgroundColor: '#2196F3',
+                            borderColor: '#1976D2',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } }
                     }
-                }
-            });
-        }
+                });
+            }
+        }, 100);
     </script>
-</body>
-</html>
                     <h3>Crop Diseases</h3>
                     <p>Learn about common crop diseases, symptoms, and treatment methods</p>
                     <a href="/dashboard/crop-diseases" class="card-link">View →</a>

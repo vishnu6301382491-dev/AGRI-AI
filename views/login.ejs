@@ -59,14 +59,21 @@
                 <button type="submit" class="btn-signin">Sign In</button>
             </form>
 
-            <div class="divider">
-                <div class="divider-line"></div>
-                <div class="divider-text">OR</div>
-                <div class="divider-line"></div>
-            </div>
+            <% if (googleClientId && googleClientId.trim()) { %>
+                <div class="divider">
+                    <div class="divider-line"></div>
+                    <div class="divider-text">OR</div>
+                    <div class="divider-line"></div>
+                </div>
 
-            <div class="google-signin" id="g_id_onload" data-client_id="<%= googleClientId %>" data-callback="handleCredentialResponse"></div>
-            <div id="g_id_signin" class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="signin_with" data-shape="rectangular" data-logo_alignment="left"></div>
+                <div class="google-signin" id="g_id_onload" data-client_id="<%= googleClientId %>" data-callback="handleCredentialResponse"></div>
+                <div id="g_id_signin" class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="signin_with" data-shape="rectangular" data-logo_alignment="left"></div>
+            <% } else { %>
+                <div style="background: #f0f0f0; padding: 15px; border-radius: 6px; margin: 20px 0; text-align: center; color: #666; font-size: 14px;">
+                    <p>💡 <strong>Google Sign-In not configured</strong></p>
+                    <p>To enable Google Sign-In, follow the setup guide in your documentation.</p>
+                </div>
+            <% } %>
 
             <div class="signup-links">
                 <p>Don't have an account? <a href="/auth/signup">Sign Up Here</a></p>
@@ -74,7 +81,14 @@
         </div>
     </div>
 
+    <!-- Store Google credentials -->
+    <script type="application/json" id="google-config">
+<%- JSON.stringify({ clientId: googleClientId || '' }) %>
+    </script>
     <script>
+        const googleConfig = JSON.parse(document.getElementById('google-config').textContent);
+        const googleClientId = googleConfig.clientId;
+        if (googleClientId && googleClientId.trim()) {
         function handleCredentialResponse(response) {
             // Decode JWT token to get user info
             const token = response.credential;
@@ -108,7 +122,7 @@
 
         window.onload = function() {
             google.accounts.id.initialize({
-                client_id: '<%= googleClientId %>',
+                client_id: googleClientId,
                 callback: handleCredentialResponse
             });
             
@@ -122,7 +136,8 @@
                     }
                 );
             }
-        };
+        }
+        }
     </script>
 </body>
 </html>

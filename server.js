@@ -10,7 +10,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const diseaseDetectionRoutes = require('./routes/disease-detection');
-const { isAuthenticated } = require('./middleware/auth');
+const { optionalAuth } = require('./middleware/auth');
 
 // Initialize Express app
 const app = express();
@@ -46,16 +46,12 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/dashboard', isAuthenticated, dashboardRoutes);
+app.use('/dashboard', optionalAuth, dashboardRoutes);
 app.use('/api/disease', diseaseDetectionRoutes);
 
-// Home route - redirect to login or dashboard based on session
+// Home route - go to dashboard (no auth required)
 app.get('/', (req, res) => {
-  if (req.session.userId) {
-    res.redirect('/dashboard');
-  } else {
-    res.redirect('/auth/login');
-  }
+  res.redirect('/dashboard');
 });
 
 // Health check endpoint

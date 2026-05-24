@@ -7,6 +7,22 @@ const isAuthenticated = (req, res, next) => {
   }
 };
 
+// Middleware for optional authentication (doesn't block if not authenticated)
+const optionalAuth = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    res.locals.isAuthenticated = true;
+    res.locals.userId = req.session.userId;
+    res.locals.userName = req.session.userName;
+    res.locals.userEmail = req.session.userEmail;
+  } else {
+    res.locals.isAuthenticated = false;
+    res.locals.userId = null;
+    res.locals.userName = 'Guest';
+    res.locals.userEmail = null;
+  }
+  next();
+};
+
 // Middleware to prevent authenticated users from accessing login page
 const isNotAuthenticated = (req, res, next) => {
   if (req.session && req.session.userId) {
@@ -75,6 +91,7 @@ const requireExpert = (req, res, next) => {
 
 module.exports = {
   isAuthenticated,
+  optionalAuth,
   isNotAuthenticated,
   requireRole,
   requireAdmin,

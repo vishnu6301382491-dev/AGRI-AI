@@ -136,8 +136,9 @@
                                     <td><%= pred.disease %></td>
                                     <td>
                                         <div class="confidence-meter">
-                                            <div class="confidence-fill" style="width: <%= pred.confidence * 100 %>%">
-                                                <%= (pred.confidence * 100).toFixed(1) %>%
+                                            <% let conf = (pred.confidence * 100).toFixed(1); %>
+                                            <div class="confidence-fill" data-width="<%= conf %>" style="background: #4CAF50;">
+                                                <%= conf %>%
                                             </div>
                                         </div>
                                     </td>
@@ -197,6 +198,11 @@
                 modal.style.display = 'none';
             }
         }
+        
+        // Set confidence meter widths from data attributes
+        document.querySelectorAll('.confidence-fill[data-width]').forEach(el => {
+            el.style.width = el.getAttribute('data-width') + '%';
+        });
     </script>
 </body>
 </html>

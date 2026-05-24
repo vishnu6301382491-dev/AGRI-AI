@@ -32,7 +32,9 @@ function getUserAnalytics(userId) {
 
 // Main dashboard route with analytics
 router.get('/', (req, res) => {
-  const analytics = getUserAnalytics(req.session.userId);
+  // Support both authenticated and guest users
+  const userId = req.session.userId || 'guest_' + (req.sessionID || 'anonymous');
+  const analytics = getUserAnalytics(userId);
   
   // Calculate summary statistics
   const summary = {
@@ -48,17 +50,19 @@ router.get('/', (req, res) => {
 
   res.render('dashboard', {
     title: 'Dashboard',
-    userName: req.session.userName,
-    userEmail: req.session.userEmail,
-    user_id: req.session.userId,
+    userName: req.session.userName || 'Guest',
+    userEmail: req.session.userEmail || null,
+    user_id: userId,
     summary: summary,
-    analytics: analytics
+    analytics: analytics,
+    isAuthenticated: req.session.userId ? true : false
   });
 });
 
 // Analytics API endpoint
 router.get('/api/analytics', (req, res) => {
-  const analytics = getUserAnalytics(req.session.userId);
+  const userId = req.session.userId || 'guest_' + (req.sessionID || 'anonymous');
+  const analytics = getUserAnalytics(userId);
   
   res.json({
     success: true,
@@ -84,11 +88,12 @@ router.get('/api/analytics', (req, res) => {
 
 // Prediction History
 router.get('/predictions', (req, res) => {
-  const analytics = getUserAnalytics(req.session.userId);
+  const userId = req.session.userId || 'guest_' + (req.sessionID || 'anonymous');
+  const analytics = getUserAnalytics(userId);
   
   res.render('prediction-history', {
     title: 'Prediction History',
-    userName: req.session.userName,
+    userName: req.session.userName || 'Guest',
     predictions: analytics.predictions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)),
     total_predictions: analytics.total_predictions
   });
@@ -96,7 +101,8 @@ router.get('/predictions', (req, res) => {
 
 // Prediction History API
 router.get('/api/predictions', (req, res) => {
-  const analytics = getUserAnalytics(req.session.userId);
+  const userId = req.session.userId || 'guest_' + (req.sessionID || 'anonymous');
+  const analytics = getUserAnalytics(userId);
   
   res.json({
     success: true,
@@ -109,15 +115,17 @@ router.get('/api/predictions', (req, res) => {
 router.get('/disease-detection', (req, res) => {
   res.render('disease-detection', {
     title: 'AI Disease Detection',
-    userName: req.session.userName,
-    userId: req.session.userId
+    userName: req.session.userName || 'Guest',
+    userId: req.session.userId || 'guest_' + (req.sessionID || 'anonymous'),
+    isAuthenticated: req.session.userId ? true : false
   });
 });
 
 // API endpoint to save prediction
 router.post('/api/save-prediction', (req, res) => {
+  const userId = req.session.userId || 'guest_' + (req.sessionID || 'anonymous');
   const { crop, disease, confidence, severity, affected_area, image_url, symptoms } = req.body;
-  const analytics = getUserAnalytics(req.session.userId);
+  const analytics = getUserAnalytics(userId);
 
   const prediction = {
     id: `pred_${Date.now()}`,
@@ -185,7 +193,7 @@ router.get('/crop-diseases', (req, res) => {
   res.render('crop-diseases', {
     title: 'Crop Diseases',
     diseases: agricultureData.cropDiseases,
-    userName: req.session.userName,
+    userName: req.session.userName || 'Guest',
     treatments: treatments
   });
 });
@@ -195,7 +203,7 @@ router.get('/food-crops', (req, res) => {
   res.render('food-crops', {
     title: 'Food Crops',
     crops: agricultureData.foodCrops,
-    userName: req.session.userName
+    userName: req.session.userName || 'Guest'
   });
 });
 
@@ -204,7 +212,7 @@ router.get('/crop-prices', (req, res) => {
   res.render('crop-prices', {
     title: 'Crop Prices',
     prices: agricultureData.cropPrices,
-    userName: req.session.userName
+    userName: req.session.userName || 'Guest'
   });
 });
 
@@ -213,7 +221,7 @@ router.get('/agricultural-seasons', (req, res) => {
   res.render('agricultural-seasons', {
     title: 'Agricultural Seasons',
     seasons: agricultureData.agriculturalSeasons,
-    userName: req.session.userName
+    userName: req.session.userName || 'Guest'
   });
 });
 
@@ -222,7 +230,7 @@ router.get('/ai-tools', (req, res) => {
   res.render('ai-tools', {
     title: 'Agriculture AI Tools',
     tools: agricultureData.aiTools,
-    userName: req.session.userName
+    userName: req.session.userName || 'Guest'
   });
 });
 
@@ -231,7 +239,7 @@ router.get('/research-topics', (req, res) => {
   res.render('research-topics', {
     title: 'AI Research Topics',
     topics: agricultureData.researchTopics,
-    userName: req.session.userName
+    userName: req.session.userName || 'Guest'
   });
 });
 
@@ -260,8 +268,8 @@ router.get('/crop-search', async (req, res) => {
 
   res.render('crop-search', {
     title: 'Crop Price Search',
-    userName: req.session.userName,
-    userEmail: req.session.userEmail,
+    userName: req.session.userName || 'Guest',
+    userEmail: req.session.userEmail || null,
     searchQuery: searchQuery || '',
     localResults: localResults,
     googleResults: googleResults
